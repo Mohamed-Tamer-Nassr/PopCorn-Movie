@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const tempMovieData = [
   {
@@ -47,53 +47,12 @@ const tempWatchedData = [
   },
 ];
 
-const KEY = "f341442e";
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-const query = "jfslfdjf";
+
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  useEffect(function () {
-    async function MovieRender() {
-      try {
-        setIsLoading(true);
-        setError(""); // Clear previous errors
-        setMovies([]); // Clear previous movies
-
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
-        );
-
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await res.json();
-
-        if (data.Response === "False") {
-          throw new Error(data.Error || "The movie was not found");
-        }
-
-        if (!data.Search || data.Search.length === 0) {
-          throw new Error("No movies found");
-        }
-
-        setMovies(data.Search);
-        setError(""); // Clear any previous errors on success
-      } catch (error) {
-        console.error("Error fetching movie data:", error);
-        setError(error.message);
-        setMovies([]); // Clear movies on error
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    MovieRender();
-  }, []);
+  const [movies, setMovies] = useState(tempMovieData);
+  const [watched, setWatched] = useState(tempWatchedData);
 
   return (
     <>
@@ -115,15 +74,7 @@ export default function App() {
         /> */}
 
         <Box>
-          {isLoading ? (
-            <Loader />
-          ) : error ? (
-            <Error message={error} />
-          ) : movies.length > 0 ? (
-            <MovieList movies={movies} setMovies={setMovies} />
-          ) : (
-            <Error message="No movies found" />
-          )}
+          <MovieList movies={movies} setMovies={setMovies} />
         </Box>
         <Box>
           <Summary watched={watched} />
@@ -131,16 +82,6 @@ export default function App() {
         </Box>
       </Main>
     </>
-  );
-}
-function Loader() {
-  return <p className="loader">Loading...</p>;
-}
-function Error({ message }) {
-  return (
-    <p className="error">
-      <span>❌</span> {message}
-    </p>
   );
 }
 
