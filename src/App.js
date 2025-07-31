@@ -50,7 +50,7 @@ const tempWatchedData = [
 const KEY = "f341442e";
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-const query = "jfslfdjf";
+const query = "";
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
@@ -122,7 +122,7 @@ export default function App() {
           ) : movies.length > 0 ? (
             <MovieList movies={movies} setMovies={setMovies} />
           ) : (
-            <Error message="No movies found" />
+            <Welcome />
           )}
         </Box>
         <Box>
@@ -140,6 +140,13 @@ function Error({ message }) {
   return (
     <p className="error">
       <span>❌</span> {message}
+    </p>
+  );
+}
+function Welcome() {
+  return (
+    <p className="welcome">
+      <span role="img">👋</span> Welcome to usePopcorn!
     </p>
   );
 }
