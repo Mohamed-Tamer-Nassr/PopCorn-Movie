@@ -400,7 +400,6 @@ body {
   aspect-ratio: 1;
   border-radius: 50%;
   border: none;
-  /* background-color: var(--color-text); */
   background-color: #fff;
   color: var(--color-background-500);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
@@ -412,6 +411,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.2s ease; /* Add transition */
+}
+
+.btn-back:active {
+  transform: translateX(-3px); /* Move arrow left when clicked */
+}
+
+/* Optional: Add hover effect */
+.btn-back:hover {
+  transform: translateX(-1px);
 }
 /* Responsive design */
 @media (max-width: 768px) {
