@@ -340,7 +340,16 @@ function MovieDetails({
     },
     [selectedId]
   );
+  // Update the document title when the component mounts
+  // This effect runs when the component mounts or when the title changes
 
+  useEffect(
+    function () {
+      if (!title) return; // Prevent setting title if title is not available
+      document.title = `usePopcorn | ${title || "Movie Details"}`;
+    },
+    [title]
+  );
   return (
     <div className="details">
       {isLoading ? (
