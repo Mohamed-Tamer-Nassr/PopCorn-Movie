@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import StarRating from "./StarRating";
 // const tempMovieData = [
 //   {
 //     imdbID: "tt1375666",
@@ -243,20 +243,101 @@ function Movie({ movie, onSelect }) {
 }
 function MovieDetails({ selectedId, onClose }) {
   const [isClicked, setIsClicked] = useState(false);
+  const [userRating, setUserRating] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  function handleSetRating(rating) {
+    setUserRating(rating);
+  }
   const handleClick = () => {
     setIsClicked(true);
     setTimeout(() => setIsClicked(false), 200); // Reset after animation
     onClose();
   };
+  const [movie, setMovie] = useState({});
+  const {
+    Title: title,
+    Poster: poster,
+    Runtime: runtime,
+    Plot: plot,
+    ReleaseDate: releaseDate,
+    Actors: actors,
+    Director: director,
+    Writer: writer,
+    Genre: genre,
+    imdbRating,
+  } = movie;
+
+  useEffect(
+    function () {
+      async function MovieDetailsRender() {
+        setIsLoading(true);
+        const response = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+        );
+        const data = await response.json();
+        // console.log(data);
+        setMovie(data);
+        setIsLoading(false);
+      }
+      MovieDetailsRender();
+    },
+    [selectedId]
+  );
+
   return (
     <div className="details">
-      <button
-        onClick={handleClick}
-        className={`btn-back ${isClicked ? "clicked" : ""}`}
-      >
-        &larr;
-      </button>
-      {selectedId}
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <header>
+            <button
+              onClick={handleClick}
+              className={`btn-back ${isClicked ? "clicked" : ""}`}
+            >
+              &larr;
+            </button>
+            <img src={poster} alt={`${title} poster`} />
+            <div className="details-overview">
+              <h2>{title}</h2>
+              <p>{releaseDate}</p>
+              <p>{genre} </p>
+              <p>
+                <span>⭐️</span>
+                <span>{imdbRating}</span>
+              </p>
+              <p>
+                <span>⏳</span>
+                <span>{runtime}</span>
+              </p>
+            </div>
+          </header>
+          <section>
+            <StarRating
+              maxRating={10}
+              size={24}
+              onSetRating={handleSetRating} // Add this prop
+              defaultRating={userRating} // Optional: Add this prop
+            />{" "}
+            <p>
+              <em>Plot</em>
+            </p>
+            <p>{plot}</p>
+            <p>
+              <em>Cast</em>
+            </p>
+            <p>{actors}</p>
+            <p>
+              <em>Director</em>
+            </p>
+            <p>{director}</p>
+            <p>
+              <em>Writer</em>
+            </p>
+            <p>{writer}</p>
+          </section>
+        </>
+      )}
     </div>
   );
 }
