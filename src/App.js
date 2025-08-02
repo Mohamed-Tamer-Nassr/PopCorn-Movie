@@ -57,8 +57,8 @@ export default function App() {
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-  // Add this near your other state declarations in App component
   const [movieRatings, setMovieRatings] = useState({});
+  // Add this near your other state declarations in App component
   // Add this function in App component
   function handleRating(movieId, rating) {
     setMovieRatings((prev) => ({
@@ -77,7 +77,19 @@ export default function App() {
       currentWatched.filter((movie) => movie.imdbID !== id)
     );
   }
-
+  useEffect(
+    function () {
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && selectedId) {
+          handleCloseDetails();
+        }
+        return function () {
+          document.removeEventListener("keydown", handleCloseDetails);
+        };
+      });
+    },
+    [selectedId]
+  );
   function handleAddWatched(movie) {
     if (watched.some((m) => m.imdbID === movie.imdbID)) {
       setWatched((currentWatched) =>
@@ -133,6 +145,7 @@ export default function App() {
         setError("");
         return;
       }
+      handleCloseDetails();
       MovieRender();
       return function () {
         controller.abort(); // Abort the fetch request if the component unmounts or query changes
