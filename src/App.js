@@ -89,6 +89,7 @@ export default function App() {
       setWatched((currentWatched) => [...currentWatched, movie]);
     }
   }
+  const controller = new AbortController();
   useEffect(
     function () {
       async function MovieRender() {
@@ -98,7 +99,8 @@ export default function App() {
           setMovies([]); // Clear previous movies
 
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
           );
 
           if (!res.ok) {
@@ -117,9 +119,11 @@ export default function App() {
           setMovies(data.Search);
           setError(""); // Clear any previous errors on success
         } catch (error) {
-          console.error("Error fetching movie data:", error);
-          setError(error.message);
-          setMovies([]); // Clear movies on error
+          if (error.name !== "AbortError") {
+            console.error("Error fetching movie data:", error);
+            setError(error.message);
+            setMovies([]); // Clear movies on error
+          }
         } finally {
           setIsLoading(false);
         }
@@ -130,6 +134,9 @@ export default function App() {
         return;
       }
       MovieRender();
+      return function () {
+        controller.abort(); // Abort the fetch request if the component unmounts or query changes
+      };
     },
     [query]
   );
@@ -347,6 +354,10 @@ function MovieDetails({
     function () {
       if (!title) return; // Prevent setting title if title is not available
       document.title = `usePopcorn | ${title || "Movie Details"}`;
+      // Cleanup function to reset the title when the component unmounts
+      return function () {
+        document.title = "usePopcorn";
+      };
     },
     [title]
   );
