@@ -52,17 +52,12 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0).toFixed(2);
 export default function App() {
   const [movies, setMovies] = useState([]);
-  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
   const [movieRatings, setMovieRatings] = useState({});
-  const [watched, setWatched] = useState(function () {
-    const storedWatched = localStorage.getItem("watched");
-    return storedWatched ? JSON.parse(storedWatched) : [];
-  });
-
   // Add this near your other state declarations in App component
   // Add this function in App component
   function handleRating(movieId, rating) {
@@ -104,13 +99,8 @@ export default function App() {
       );
     } else {
       setWatched((currentWatched) => [...currentWatched, movie]);
-      // localStorage.setItem("watched", JSON.stringify([...watched, movie]));
     }
   }
-  useEffect(() => {
-    localStorage.setItem("watched", JSON.stringify(watched));
-  }, [watched]);
-
   const controller = new AbortController();
   useEffect(
     function () {
@@ -161,7 +151,7 @@ export default function App() {
         controller.abort(); // Abort the fetch request if the component unmounts or query changes
       };
     },
-    [query] // Add controller.signal to the dependency array
+    [query]
   );
 
   return (
