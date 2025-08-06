@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
+import { useLocalStorage } from "./useLocalStorage";
 import { useMovie } from "./useMovie";
 
 const average = (arr) =>
@@ -10,14 +11,15 @@ export default function App() {
   // const [watched, setWatched] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-
-  const { movies, isLoading, error } = useMovie(query, KEY, handleCloseDetails);
-
   const [movieRatings, setMovieRatings] = useState({});
-  const [watched, setWatched] = useState(function () {
-    const storedWatched = localStorage.getItem("watched");
-    return storedWatched ? JSON.parse(storedWatched) : [];
-  });
+
+  const { movies, isLoading, error } = useMovie(query, KEY);
+  const [watched, setWatched] = useLocalStorage([], "watched");
+
+  // const [watched, setWatched] = useState(function () {
+  //   const storedWatched = localStorage.getItem("watched");
+  //   return storedWatched ? JSON.parse(storedWatched) : [];
+  // });
 
   // Add this near your other state declarations in App component
   // Add this function in App component
@@ -63,9 +65,6 @@ export default function App() {
       // localStorage.setItem("watched", JSON.stringify([...watched, movie]));
     }
   }
-  useEffect(() => {
-    localStorage.setItem("watched", JSON.stringify(watched));
-  }, [watched]);
 
   return (
     <>

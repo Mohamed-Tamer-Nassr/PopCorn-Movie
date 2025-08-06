@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 
-export function useMovie(query, KEY, callBack) {
+export function useMovie(query, KEY) {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const controller = new AbortController();
   useEffect(
     function () {
-      callBack?.();
+      const controller = new AbortController();
       async function MovieRender() {
         try {
           setIsLoading(true);
