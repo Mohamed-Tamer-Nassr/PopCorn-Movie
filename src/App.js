@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
+import { useKey } from "./useKey";
 import { useLocalStorage } from "./useLocalStorage";
 import { useMovie } from "./useMovie";
 
@@ -40,19 +41,9 @@ export default function App() {
       currentWatched.filter((movie) => movie.imdbID !== id)
     );
   }
-  useEffect(
-    function () {
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && selectedId) {
-          handleCloseDetails();
-        }
-        return function () {
-          document.removeEventListener("keydown", handleCloseDetails);
-        };
-      });
-    },
-    [selectedId]
-  );
+
+  useKey("Escape", handleCloseDetails);
+
   function handleAddWatched(movie) {
     if (watched.some((m) => m.imdbID === movie.imdbID)) {
       setWatched((currentWatched) =>
@@ -144,20 +135,11 @@ function Logo() {
 }
 function Search({ query, setQuery }) {
   const inputEl = useRef(null);
-
-  useEffect(() => {
-    function callBack(e) {
-      if (document.activeElement === inputEl.current) return;
-
-      if (e.code === "Enter") {
-        inputEl.current.focus();
-        setQuery("");
-      }
-    }
-
-    document.addEventListener("keydown", callBack);
-    return () => document.removeEventListener("keydown", callBack);
-  }, [setQuery]);
+  useKey("Enter", function () {
+    if (document.activeElement === inputEl.current) return;
+    inputEl.current.focus();
+    setQuery("");
+  });
 
   return (
     <input
